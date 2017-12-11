@@ -1,4 +1,7 @@
+*.eggs
+*.egg-info
 *.pyc
+*.so
 __pycache__
 MANIFEST
 build
