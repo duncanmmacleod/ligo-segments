@@ -195,6 +195,23 @@ static PyObject *intersects(PyObject *self, PyObject *other)
 	return result;
 }
 
+static PyObject *connects(PyObject *self, PyObject *other)
+{
+	PyObject *sa = PyTuple_GET_ITEM(self, 0);
+	PyObject *sb = PyTuple_GET_ITEM(self, 1);
+	PyObject *oa, *ob;
+	PyObject *result;
+	if(!segments_Segment_Check(other)) {
+		PyErr_SetObject(PyExc_TypeError, other);
+		return NULL;
+	}
+	oa = PyTuple_GET_ITEM(other, 0);
+	ob = PyTuple_GET_ITEM(other, 1);
+	result = PyObject_RichCompareBool(sb, oa, Py_EQ) || PyObject_RichCompareBool(sa, ob, Py_EQ) ? Py_True : Py_False;
+	Py_INCREF(result);
+	return result;
+}
+
 
 static int __contains__(PyObject *self, PyObject *other)
 {
@@ -448,6 +465,7 @@ static PySequenceMethods as_sequence = {
 static struct PyMethodDef methods[] = {
 	{"disjoint", disjoint, METH_O, "Returns >0 if self covers an interval above other's interval, <0 if self covers an interval below other's, or 0 if the two intervals are not disjoint (intersect or touch).  A return value of 0 indicates the two segments would coalesce."},
 	{"intersects", intersects, METH_O, "Return True if the intersection of self and other is not a null segment."},
+	{"connects", connects, METH_O, "Return True if self connects exactly onto other."},
 	{"protract", protract, METH_O, "Return a new segment whose bounds are given by subtracting x from the segment's lower bound and adding x to the segment's upper bound."},
 	{"contract", contract, METH_O, "Return a new segment whose bounds are given by adding x to the segment's lower bound and subtracting x from the segment's upper bound."},
 	{"shift", shift, METH_O, "Return a new segment whose bounds are given by adding x to the segment's upper and lower bounds."},

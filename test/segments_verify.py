@@ -163,6 +163,25 @@ class test_segment(unittest.TestCase):
 		)
 		list(map(lambda i, r, a, b: self.assertEqual((i, r), (i, a.intersects(b))), range(len(results)), results, set1(), set2()))
 
+	def testconnects(self):
+		results = (
+			False,
+			True,
+			False,
+			False,
+			False,
+			False,
+			False,
+			True,
+			False,
+			False,
+			False,
+			False,
+			False,
+			False
+		)
+		list(map(lambda i, r, a, b: self.assertEqual((i, r), (i, a.connects(b))), range(len(results)), results, set1(), set2()))
+
 	def test__contains__(self):
 		results = (
 			False,

@@ -434,6 +434,12 @@ class segment(tuple):
 		"""
 		return (self[1] > other[0]) and (self[0] < other[1])
 
+	def connects(self, other):
+		"""
+		Returns True if ths segment and other touch but do not overlap
+		"""
+		return (self[1] == other[0]) or (self[0] == other[1])
+
 	def __contains__(self, other):
 		"""
 		Return True if other is wholly contained in self.  If other
