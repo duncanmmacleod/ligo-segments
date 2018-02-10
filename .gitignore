@@ -6,6 +6,5 @@ __pycache__
 MANIFEST
 build
 dist
-etc/glue-user-env.*sh
 glue/git_version.py
 src/conf/s6_db2/*.sql
