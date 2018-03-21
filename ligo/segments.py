@@ -47,14 +47,12 @@ from bisect import bisect_right as _bisect_right
 from copy import copy as _shallowcopy
 
 
-from glue import git_version
 import six
 from six.moves import range
 
 
 __author__ = "Kipp Cannon <kipp.cannon@ligo.org>"
-__version__ = "git id %s" % git_version.id
-__date__ = git_version.date
+__version__ = '1.0.0-rc1'
 
 
 #

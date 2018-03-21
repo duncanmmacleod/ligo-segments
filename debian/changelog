@@ -1,0 +1,5 @@
+ligo-segments (1.0.0-rc1-1) unstable; urgency=low
+
+  * initial commit of debian packaging scripts, not a true release
+
+ -- Duncan Macleod <duncan.macleod@ligo.org>  Tue, 20 Feb 2018 15:39:00 +0000

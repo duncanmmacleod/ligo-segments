@@ -1,0 +1,11 @@
+#!/usr/bin/make -f
+
+export PYBUILD_NAME := ligo-segments
+
+export PYBUILD_AFTER_TEST := env \
+	PYTHONPATH={build_dir} \
+	PYTHONDONTWRITEBYTECODE=1 \
+	make -C {dir}/test PYTHON={interpreter}
+
+%:
+	dh $@ --with python2,python3 --buildsystem=pybuild
