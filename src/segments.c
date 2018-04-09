@@ -57,11 +57,13 @@ PyMODINIT_FUNC PyInit___segments(void)
 	if(PyType_Ready(&segments_Infinity_Type) < 0)
 		goto done;
 
+	segments_Segment_Type.tp_base = &PyTuple_Type;
 	if(!segments_Segment_Type.tp_hash)
 		segments_Segment_Type.tp_hash = PyTuple_Type.tp_hash;
 	if(PyType_Ready(&segments_Segment_Type) < 0)
 		goto done;
 
+	segments_SegmentList_Type.tp_base = &PyList_Type;
 	if(PyType_Ready(&segments_SegmentList_Type) < 0)
 		goto done;
 
