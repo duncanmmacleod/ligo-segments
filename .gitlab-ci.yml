@@ -1,7 +1,3 @@
-variables:
-  TWINE_USERNAME: SECURE
-  TWINE_PASSWORD: SECURE
-
 stages:
   - test
   - build
