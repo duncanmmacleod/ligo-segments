@@ -82,7 +82,7 @@ deploy:
   image: python:3.6
   script:
     - python -m pip install twine
-    - twine upload dist/ligo-segments*  # credentials provided in secret variables
+    - twine upload dist/*  # credentials provided in secret variables
   dependencies:
     - build:tarball
     - build:wheel:cp27-cp27m-manylinux1
