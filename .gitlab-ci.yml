@@ -48,8 +48,8 @@ build:tarball:
     - PYTHON="/opt/python/${PYTAG}/bin/python"
     - $PYTHON -m pip install wheel auditwheel
   script:
-    - $PYTHON setup.py bdist_wheel -d dist/
-    - auditwheel repair dist/*.whl
+    - $PYTHON setup.py bdist_wheel -d wheels/
+    - auditwheel repair wheels/*.whl -w dist/
     - $PYTHON -m pip install -q dist/*.whl
   artifacts:
     expire_in: 3h
