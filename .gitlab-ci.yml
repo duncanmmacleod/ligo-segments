@@ -34,6 +34,16 @@ test:3.6:
 
 # -- build ------------------
 
+build:tarball:
+  image: python:3.6
+  stage: build
+  script:
+    - python setup.py sdist
+  artifacts:
+    expire_in: 3h
+    paths:
+      - dist
+
 .build:wheel:manylinux1: &wheel-manylinux1
   image: quay.io/pypa/manylinux1_x86_64
   stage: build
@@ -42,12 +52,12 @@ test:3.6:
     - PYTHON="/opt/python/${PYTAG}/bin/python"
   script:
     - $PYTHON -m pip install wheel
-    - $PYTHON -m pip wheel . -w wheels/
-    - $PYTHON -m pip install -q wheels/*.whl
+    - $PYTHON -m pip wheel . -w dist/
+    - $PYTHON -m pip install -q dist/*.whl
   artifacts:
     expire_in: 3h
     paths:
-      - wheels
+      - dist
 
 build:wheel:cp27-cp27m-manylinux1:
   <<: *wheel-manylinux1
@@ -66,13 +76,14 @@ build:wheel:cp36-cp36m-manylinux1:
 
 # -- deploy -----------------
 
-deploy:wheel:
+deploy:
   stage: deploy
   image: python3.6
   script:
     - python -m pip install twine
-    - twine upload wheels/*  # credentials provided in secret variables
+    - twine upload dist/ligo-segments*  # credentials provided in secret variables
   dependencies:
+    - build:tarball
     - build:wheel:cp27-cp27m-manylinux1
     - build:wheel:cp27-cp27mu-manylinux1
     - build:wheel:cp34-cp34m-manylinux1
