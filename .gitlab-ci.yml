@@ -1,0 +1,84 @@
+variables:
+  - TWINE_USERNAME: SECURE
+  - TWINE_PASSWORD: SECURE
+
+stages:
+  - test
+  - build
+  - deploy
+
+# -- test -------------------
+
+.test: &test
+  before_script:
+    - python -m pip install setuptools
+  script:
+    - python -m pip install .
+    - make -C test
+
+test:2.7:
+  <<: *test
+  image: python:2.7
+
+test:3.4:
+  <<: *test
+  image: python:3.4
+
+test:3.5:
+  <<: *test
+  image: python:3.5
+
+test:3.6:
+  <<: *test
+  image: python:3.6
+
+# -- build ------------------
+
+.build:wheel:manylinux1: &wheel-manylinux1
+  image: quay.io/pypa/manylinux1_x86_64
+  stage: build
+  before_script:
+    - PYTAG=$(echo ${CI_JOB_NAME} | sed 's/.*:\(.*\)-manylinux1/\1/')
+    - PYTHON="/opt/python/${PYTAG}/bin/python"
+  script:
+    - $PYTHON -m pip install wheel
+    - $PYTHON -m pip wheel . -w wheels/
+    - $PYTHON -m pip install -q wheels/*.whl
+  artifacts:
+    expire_in: 3h
+    paths:
+      - wheels
+
+build:wheel:cp27-cp27m-manylinux1:
+  <<: *wheel-manylinux1
+
+build:wheel:cp27-cp27mu-manylinux1:
+  <<: *wheel-manylinux1
+
+build:wheel:cp34-cp34m-manylinux1:
+  <<: *wheel-manylinux1
+
+build:wheel:cp35-cp35m-manylinux1:
+  <<: *wheel-manylinux1
+
+build:wheel:cp36-cp36m-manylinux1:
+  <<: *wheel-manylinux1
+
+# -- deploy -----------------
+
+deploy:wheel:
+  stage: deploy
+  image: python3.6
+  script:
+    - python -m pip install twine
+    - twine upload wheels/*  # credentials provided in secret variables
+  dependencies:
+    - build:wheel:cp27-cp27m-manylinux1
+    - build:wheel:cp27-cp27mu-manylinux1
+    - build:wheel:cp34-cp34m-manylinux1
+    - build:wheel:cp35-cp35m-manylinux1
+    - build:wheel:cp36-cp36m-manylinux1
+  only:
+    - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
+  except:
+    - branches
