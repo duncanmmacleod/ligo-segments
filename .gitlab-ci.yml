@@ -50,9 +50,10 @@ build:tarball:
   before_script:
     - PYTAG=$(echo ${CI_JOB_NAME} | sed 's/.*:\(.*\)-manylinux1/\1/')
     - PYTHON="/opt/python/${PYTAG}/bin/python"
+    - $PYTHON -m pip install wheel auditwheel
   script:
-    - $PYTHON -m pip install wheel
-    - $PYTHON -m pip wheel . -w dist/
+    - $PYTHON setup.py bdist_wheel -d dist/
+    - auditwheel repair dist/*.whl
     - $PYTHON -m pip install -q dist/*.whl
   artifacts:
     expire_in: 3h
@@ -78,7 +79,7 @@ build:wheel:cp36-cp36m-manylinux1:
 
 deploy:
   stage: deploy
-  image: python3.6
+  image: python:3.6
   script:
     - python -m pip install twine
     - twine upload dist/ligo-segments*  # credentials provided in secret variables
