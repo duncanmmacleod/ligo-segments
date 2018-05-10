@@ -75,7 +75,7 @@ build:wheel:cp36-cp36m-manylinux1:
 
 deploy:
   stage: deploy
-  image: python:3.6
+  image: python
   script:
     - python -m pip install twine
     - twine upload dist/*  # credentials provided in secret variables
