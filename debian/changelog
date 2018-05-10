@@ -1,5 +1,5 @@
-ligo-segments (1.0.0-rc1-1) unstable; urgency=low
+ligo-segments (1.0.0-1) unstable; urgency=low
 
-  * initial commit of debian packaging scripts, not a true release
+  * first release of ligo.segments, should be funtionally identical to glue.segments
 
- -- Duncan Macleod <duncan.macleod@ligo.org>  Tue, 20 Feb 2018 15:39:00 +0000
+ -- Duncan Macleod <duncan.macleod@ligo.org>  Thu, 10 May 2018 12:00:00 +0000
