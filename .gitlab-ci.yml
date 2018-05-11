@@ -88,9 +88,7 @@ build:el7:
           python34-pytest
   script:
     - python setup.py sdist
-    - VERSION=$(python setup.py --version)
-    - mv dist/*.tar.gz dist/ligo-segments-${VERSION}.tar.gz
-    - rpmbuild -tb dist/ligo-segments-${VERSION}.tar.gz
+    - rpmbuild -tb dist/ligo-segments*.tar.gz
     - mv ~/rpmbuild/RPMS/*/python*-ligo-segments-*.rpm dist/el7/
 
 .build:debian: &build_debian
@@ -117,8 +115,7 @@ build:el7:
     - VERSION=$(python setup.py --version)
     - pushd tmpbuild
     - TARBALL=$(ls -1 *.tar.gz)
-    - DEBVERSION=${VERSION/rc/-rc}
-    - DEBTARBALL="${TARBALL/-$VERSION.tar/_$DEBVERSION.orig.tar}"
+    - DEBTARBALL="${TARBALL/-$VERSION.tar/_$VERSION.orig.tar}"
     - mv ${TARBALL} ${DEBTARBALL}
     - tar -xf $DEBTARBALL
     - pushd ligo-segments-$VERSION
