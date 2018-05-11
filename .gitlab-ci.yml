@@ -71,6 +71,51 @@ build:wheel:cp35-cp35m-manylinux1:
 build:wheel:cp36-cp36m-manylinux1:
   <<: *wheel-manylinux1
 
+build:el7:
+  image: ligo/base:el7
+  stage: build
+  before_script:
+    - mkdir -p dist/el7
+    - yum install -yq rpm-build python-setuptools
+  script:
+    - python setup.py sdist
+    - rpmbuild -tb dist/ligo-segments-*.tar.gz
+    - mv ~/rpmbuild/RPMS/*/python*-ligo-segments-*.rpm dist/el7/
+  artifacts:
+    expire_in: 3h
+    paths:
+      - dist
+
+build:debian:jessie:
+  image: ligo/software:jessie
+  stage: build
+  before_script:
+    - mkdir -p dist/jessie/
+    - apt-get update -yqq
+    - apt-get install -yq python-all-dev python-setuptools python3-all-dev python3-setuptools
+  script:
+    - dpkg-buildpackage -us -uc
+    - mv ../python*-ligo-segments_*.deb dist/jessie/
+  artifacts:
+    expire_in: 3h
+    paths:
+      - dist
+
+build:debian:stretch:
+  image: ligo/software:stretch
+  stage: build
+  before_script:
+    - mkdir -p dist/stretch/
+    - apt-get update -yqq
+    - apt-get install -yq python-all-dev python-setuptools python3-all-dev python3-setuptools
+  script:
+    - dpkg-buildpackage -us -uc
+    - mv ../python*-ligo-segments_*.deb dist/stretch/
+  artifacts:
+    expire_in: 3h
+    paths:
+      - dist
+
 # -- deploy -----------------
 
 deploy:
@@ -78,7 +123,7 @@ deploy:
   image: python
   script:
     - python -m pip install twine
-    - twine upload dist/*  # credentials provided in secret variables
+    - twine upload dist/ligo-segments-*tar.gz dist/ligo_segments*.whl  # credentials provided in secret variables
   dependencies:
     - build:tarball
     - build:wheel:cp27-cp27m-manylinux1
