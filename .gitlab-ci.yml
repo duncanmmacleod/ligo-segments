@@ -90,12 +90,13 @@ build:el7:
     - python setup.py sdist
     - rpmbuild -tb dist/ligo-segments*.tar.gz
     - mv ~/rpmbuild/RPMS/*/python*-ligo-segments-*.rpm dist/el7/
+  after_script:
+    - rm -rf dist/*.tar.gz
 
 .build:debian: &build_debian
   <<: *build
-  variables:
-    DIST_PATH: "dist/${CI_JOB_NAME##*:}"
   before_script:
+    - DIST_PATH="dist/${CI_JOB_NAME##*:}"
     - mkdir -p ${DIST_PATH}
     - apt-get update -yqq
     - apt-get install -yq
