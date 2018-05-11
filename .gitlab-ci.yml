@@ -114,14 +114,15 @@ build:el7:
   script:
     - python setup.py sdist --dist-dir tmpbuild
     - VERSION=$(python setup.py --version)
-    - pushd tmpbuild
+    - pushd .
+    - cd tmpbuild
     - TARBALL=$(ls -1 *.tar.gz)
     - DEBTARBALL="${TARBALL/-$VERSION.tar/_$VERSION.orig.tar}"
     - mv ${TARBALL} ${DEBTARBALL}
     - tar -xf $DEBTARBALL
-    - pushd ligo-segments-$VERSION
+    - cd ligo-segments-$VERSION
     - dpkg-buildpackage -us -uc
-    - popd -2
+    - popd
     - mv tmpbuild/python*-ligo-segments_*.deb ${DIST_PATH}/
   after_script:
     - rm -rf tmpbuild
