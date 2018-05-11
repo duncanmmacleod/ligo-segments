@@ -112,9 +112,9 @@ build:el7:
           python3-six
   script:
     - python setup.py sdist --dist-dir tmpbuild
+    - VERSION=$(python setup.py --version)
     - pushd tmpbuild
     - TARBALL=$(ls -1 *.tar.gz)
-    - VERSION=$(python setup.py --version)
     - DEBVERSION=${VERSION/rc/-rc}
     - DEBTARBALL="${TARBALL/-$VERSION.tar/_$DEBVERSION.orig.tar}"
     - mv ${TARBALL} ${DEBTARBALL}
