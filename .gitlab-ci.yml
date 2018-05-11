@@ -111,8 +111,18 @@ build:el7:
           python-six
           python3-six
   script:
+    - python setup.py sdist --dist-dir tmpbuild
+    - pushd tmpbuild
+    - TARBALL=$(ls -1 *.tar.gz)
+    - VERSION=$(echo $TARBALL | awk -F'ligo-segments-|.tar.gz' '{print $2}')
+    - mv ${TARBALL} ${TARBALL/-$VERSION.tar/_$VERSION.orig.tar}
+    - tar -xf $TARBALL
+    - pushd ligo-segments-$VERSION
     - dpkg-buildpackage -us -uc
-    - mv ../python*-ligo-segments_*.deb ${DIST_PATH}/
+    - popd -2
+    - mv tmpbuild/python*-ligo-segments_*.deb ${DIST_PATH}/
+  after_script:
+    - rm -rf tmpbuild
 
 build:debian:jessie:
   <<: *build_debian
