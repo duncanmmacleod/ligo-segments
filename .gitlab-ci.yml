@@ -76,6 +76,7 @@ build:el7:
   before_script:
     - mkdir -p dist/el7
     - yum install -yq
+          gcc
           rpm-build
           python3-rpm-macros
           python-devel
