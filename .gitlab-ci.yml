@@ -30,19 +30,22 @@ test:3.6:
 
 # -- build ------------------
 
-build:tarball:
-  image: python:3.6
+.build: &build
   stage: build
-  script:
-    - python setup.py sdist
   artifacts:
     expire_in: 3h
     paths:
       - dist
 
+build:tarball:
+  <<: *build
+  image: python:3.6
+  script:
+    - python setup.py sdist
+
 .build:wheel:manylinux1: &wheel-manylinux1
+  <<: *build
   image: quay.io/pypa/manylinux1_x86_64
-  stage: build
   before_script:
     - PYTAG=$(echo ${CI_JOB_NAME} | sed 's/.*:\(.*\)-manylinux1/\1/')
     - PYTHON="/opt/python/${PYTAG}/bin/python"
@@ -51,10 +54,6 @@ build:tarball:
     - $PYTHON setup.py bdist_wheel -d wheels/
     - auditwheel repair wheels/*.whl -w dist/
     - $PYTHON -m pip install -q dist/*.whl
-  artifacts:
-    expire_in: 3h
-    paths:
-      - dist
 
 build:wheel:cp27-cp27m-manylinux1:
   <<: *wheel-manylinux1
@@ -72,49 +71,45 @@ build:wheel:cp36-cp36m-manylinux1:
   <<: *wheel-manylinux1
 
 build:el7:
+  <<: *build
   image: centos:centos7
-  stage: build
   before_script:
     - mkdir -p dist/el7
-    - yum install -yq rpm-build python-setuptools
+    - yum install -yq
+          rpm-build
+          python3-rpm-macros
+          python-devel
+          python2-setuptools
+          python-six
+          pytest
+          python34-devel
+          python34-setuptools
+          python34-six
+          python34-pytest
   script:
     - python setup.py sdist
     - rpmbuild -tb dist/ligo-segments-*.tar.gz
     - mv ~/rpmbuild/RPMS/*/python*-ligo-segments-*.rpm dist/el7/
-  artifacts:
-    expire_in: 3h
-    paths:
-      - dist
+
+.build:debian: &build_debian
+  <<: *build
+  variables:
+    DIST_PATH: "dist/${CI_JOB_NAME##*:}"
+  before_script:
+    - mkdir -p ${DIST_PATH}
+    - apt-get update -yqq
+    - apt-get install -yq dpkg-dev python-all-dev python-setuptools python3-all-dev python3-setuptools
+  script:
+    - dpkg-buildpackage -us -uc
+    - mv ../python*-ligo-segments_*.deb ${DIST_PATH}/
 
 build:debian:jessie:
+  <<: *build_debian
   image: debian:jessie
-  stage: build
-  before_script:
-    - mkdir -p dist/jessie/
-    - apt-get update -yqq
-    - apt-get install -yq python-all-dev python-setuptools python3-all-dev python3-setuptools
-  script:
-    - dpkg-buildpackage -us -uc
-    - mv ../python*-ligo-segments_*.deb dist/jessie/
-  artifacts:
-    expire_in: 3h
-    paths:
-      - dist
 
 build:debian:stretch:
+  <<: *build_debian
   image: debian:stretch
-  stage: build
-  before_script:
-    - mkdir -p dist/stretch/
-    - apt-get update -yqq
-    - apt-get install -yq python-all-dev python-setuptools python3-all-dev python3-setuptools
-  script:
-    - dpkg-buildpackage -us -uc
-    - mv ../python*-ligo-segments_*.deb dist/stretch/
-  artifacts:
-    expire_in: 3h
-    paths:
-      - dist
 
 # -- deploy -----------------
 
