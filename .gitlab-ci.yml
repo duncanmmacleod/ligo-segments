@@ -100,6 +100,7 @@ build:el7:
     - apt-get update -yqq
     - apt-get install -yq
           dpkg-dev
+          debhelper
           dh-python
           python-all-dev
           python3-all-dev
