@@ -115,7 +115,8 @@ build:el7:
     - pushd tmpbuild
     - TARBALL=$(ls -1 *.tar.gz)
     - VERSION=$(python setup.py --version)
-    - DEBTARBALL="${TARBALL/-$VERSION.tar/_$VERSION.orig.tar}"
+    - DEBVERSION=${VERSION/rc/-rc}
+    - DEBTARBALL="${TARBALL/-$VERSION.tar/_$DEBVERSION.orig.tar}"
     - mv ${TARBALL} ${DEBTARBALL}
     - tar -xf $DEBTARBALL
     - pushd ligo-segments-$VERSION
