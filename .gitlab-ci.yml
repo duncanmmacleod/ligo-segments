@@ -72,7 +72,7 @@ build:wheel:cp36-cp36m-manylinux1:
 
 build:el7:
   <<: *build
-  image: centos:centos7
+  image: ligo/base:el7
   before_script:
     - mkdir -p dist/el7
     - yum install -yq
@@ -98,7 +98,17 @@ build:el7:
   before_script:
     - mkdir -p ${DIST_PATH}
     - apt-get update -yqq
-    - apt-get install -yq dpkg-dev python-all-dev python-setuptools python3-all-dev python3-setuptools
+    - apt-get install -yq
+          dpkg-dev
+          dh-python
+          python-all-dev
+          python3-all-dev
+          python-pytest
+          python3-pytest
+          python-setuptools
+          python3-setuptools
+          python-six
+          python3-six
   script:
     - dpkg-buildpackage -us -uc
     - mv ../python*-ligo-segments_*.deb ${DIST_PATH}/
