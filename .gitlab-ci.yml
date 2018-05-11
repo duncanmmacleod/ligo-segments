@@ -72,7 +72,7 @@ build:wheel:cp36-cp36m-manylinux1:
   <<: *wheel-manylinux1
 
 build:el7:
-  image: ligo/base:el7
+  image: centos:centos7
   stage: build
   before_script:
     - mkdir -p dist/el7
@@ -87,7 +87,7 @@ build:el7:
       - dist
 
 build:debian:jessie:
-  image: ligo/software:jessie
+  image: debian:jessie
   stage: build
   before_script:
     - mkdir -p dist/jessie/
@@ -102,7 +102,7 @@ build:debian:jessie:
       - dist
 
 build:debian:stretch:
-  image: ligo/software:stretch
+  image: debian:stretch
   stage: build
   before_script:
     - mkdir -p dist/stretch/
