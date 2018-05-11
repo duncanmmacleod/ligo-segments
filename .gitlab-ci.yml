@@ -88,9 +88,9 @@ build:el7:
           python34-pytest
   script:
     - python setup.py sdist
-    - pwd
-    - ls dist/
-    - rpmbuild -tb dist/*.tar.gz
+    - VERSION=$(python setup.py --version)
+    - mv dist/*.tar.gz dist/ligo-segments-${VERSION}.tar.gz
+    - rpmbuild -tb dist/ligo-segments-${VERSION}.tar.gz
     - mv ~/rpmbuild/RPMS/*/python*-ligo-segments-*.rpm dist/el7/
 
 .build:debian: &build_debian
