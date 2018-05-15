@@ -76,5 +76,5 @@ make check PYTHON=%{__python3} PYTHONPATH="$RPM_BUILD_ROOT%{python3_sitearch}"
 %{python3_sitearch}/*
 
 %changelog
-* Thu May 20 2018 Duncan Macleod <duncan.macleod@ligo.org>
+* Thu May 10 2018 Duncan Macleod <duncan.macleod@ligo.org>
 - 1.0.0: first release of ligo.segments, should be funtionally identical to glue.segments
