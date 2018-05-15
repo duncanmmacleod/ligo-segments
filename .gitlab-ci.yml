@@ -1,0 +1,156 @@
+stages:
+  - test
+  - build
+  - deploy
+
+# -- test -------------------
+
+.test: &test
+  before_script:
+    - python -m pip install setuptools
+  script:
+    - python -m pip install .
+    - make -C test
+
+test:2.7:
+  <<: *test
+  image: python:2.7
+
+test:3.4:
+  <<: *test
+  image: python:3.4
+
+test:3.5:
+  <<: *test
+  image: python:3.5
+
+test:3.6:
+  <<: *test
+  image: python:3.6
+
+# -- build ------------------
+
+.build: &build
+  stage: build
+  artifacts:
+    expire_in: 3h
+    paths:
+      - dist
+
+build:tarball:
+  <<: *build
+  image: python:3.6
+  script:
+    - python setup.py sdist
+
+.build:wheel:manylinux1: &wheel-manylinux1
+  <<: *build
+  image: quay.io/pypa/manylinux1_x86_64
+  before_script:
+    - PYTAG=$(echo ${CI_JOB_NAME} | sed 's/.*:\(.*\)-manylinux1/\1/')
+    - PYTHON="/opt/python/${PYTAG}/bin/python"
+    - $PYTHON -m pip install wheel auditwheel
+  script:
+    - $PYTHON setup.py bdist_wheel -d wheels/
+    - auditwheel repair wheels/*.whl -w dist/
+    - $PYTHON -m pip install -q dist/*.whl
+
+build:wheel:cp27-cp27m-manylinux1:
+  <<: *wheel-manylinux1
+
+build:wheel:cp27-cp27mu-manylinux1:
+  <<: *wheel-manylinux1
+
+build:wheel:cp34-cp34m-manylinux1:
+  <<: *wheel-manylinux1
+
+build:wheel:cp35-cp35m-manylinux1:
+  <<: *wheel-manylinux1
+
+build:wheel:cp36-cp36m-manylinux1:
+  <<: *wheel-manylinux1
+
+build:el7:
+  <<: *build
+  image: ligo/base:el7
+  before_script:
+    - mkdir -p dist/el7
+    - yum install -yq
+          gcc make rpm-build
+          python3-rpm-macros
+          python-devel
+          python2-setuptools
+          python-six
+          pytest
+          python34-devel
+          python34-setuptools
+          python34-six
+          python34-pytest
+  script:
+    - python setup.py sdist
+    - rpmbuild -tb dist/ligo-segments*.tar.gz
+    - mv ~/rpmbuild/RPMS/*/python*-ligo-segments-*.rpm dist/el7/
+  after_script:
+    - rm -rf dist/*.tar.gz
+
+.build:debian: &build_debian
+  <<: *build
+  before_script:
+    - DIST_PATH="dist/${CI_JOB_NAME##*:}"
+    - mkdir -p ${DIST_PATH}
+    - apt-get update -yqq
+    - apt-get install -yq
+          dpkg-dev
+          debhelper
+          dh-python
+          python-all-dev
+          python3-all-dev
+          python-pytest
+          python3-pytest
+          python-setuptools
+          python3-setuptools
+          python-six
+          python3-six
+  script:
+    - python setup.py sdist --dist-dir tmpbuild
+    - VERSION=$(python setup.py --version)
+    - pushd .
+    - cd tmpbuild
+    - TARBALL=$(ls -1 *.tar.gz)
+    - DEBTARBALL="${TARBALL/-$VERSION.tar/_$VERSION.orig.tar}"
+    - mv ${TARBALL} ${DEBTARBALL}
+    - tar -xf $DEBTARBALL
+    - cd ligo-segments-$VERSION
+    - dpkg-buildpackage -us -uc
+    - popd
+    - mv tmpbuild/python*-ligo-segments_*.deb ${DIST_PATH}/
+  after_script:
+    - rm -rf tmpbuild
+
+build:debian:jessie:
+  <<: *build_debian
+  image: debian:jessie
+
+build:debian:stretch:
+  <<: *build_debian
+  image: debian:stretch
+
+# -- deploy -----------------
+
+deploy:
+  stage: deploy
+  image: python
+  script:
+    - python -m pip install twine
+    - twine upload dist/ligo-segments-*tar.gz dist/ligo_segments*.whl  # credentials provided in secret variables
+  dependencies:
+    - build:tarball
+    - build:wheel:cp27-cp27m-manylinux1
+    - build:wheel:cp27-cp27mu-manylinux1
+    - build:wheel:cp34-cp34m-manylinux1
+    - build:wheel:cp35-cp35m-manylinux1
+    - build:wheel:cp36-cp36m-manylinux1
+  only:
+    - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
+  except:
+    - branches
