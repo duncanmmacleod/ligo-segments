@@ -12,6 +12,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.autosummary',
+    'sphinx.ext.intersphinx',
 ]
 
 templates_path = ['_templates']
@@ -41,6 +42,11 @@ pygments_style = 'monokai'
 # Don't complain about remote URIs for images
 suppress_warnings = ['image.nonlocal_uri']
 
+# Intersphinx directory
+intersphinx_mapping = {
+    'https://docs.python.org/': None,  # python
+}
+
 # -- Options for HTML output ----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -59,17 +65,18 @@ htmlhelp_basename = 'ligo-segmentsdoc'
 # -- add static files----------------------------------------------------------
 
 def setup_static_content(app):
+    curdir = os.path.abspath(os.path.dirname(__file__))
     # configure stylesheets
     for sdir in html_static_path:
+        staticdir = os.path.join(curdir, sdir)
+
         # add stylesheets
-        cssdir = os.path.join(sdir, 'css')
-        for cssf in glob.glob(os.path.join(cssdir, '*.css')):
-            app.add_stylesheet(cssf.split(os.path.sep, 1)[1])
+        for cssf in glob.glob(os.path.join(staticdir, 'css', '*.css')):
+            app.add_stylesheet(cssf[len(staticdir)+1:])
 
         # add custom javascript
-        jsdir = os.path.join(sdir, 'js')
-        for jsf in glob.glob(os.path.join(jsdir, '*.js')):
-            app.add_javascript(jsf.split(os.path.sep, 1)[1])
+        for jsf in glob.glob(os.path.join(staticdir, 'js', '*.js')):
+            app.add_javascript(jsf[len(staticdir)+1:])
 
 # -- setup --------------------------------------------------------------------
 
