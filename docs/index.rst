@@ -8,6 +8,7 @@ ligo.segments
    :inherited-members:
    :imported-members:
    :show-inheritance:
+   :exclude-members: range
 
 .. |pypi-version| image:: https://badge.fury.io/py/ligo-segments.svg
    :target: http://badge.fury.io/py/ligo-segments
