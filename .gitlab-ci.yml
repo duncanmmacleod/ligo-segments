@@ -156,7 +156,7 @@ pages:
     paths:
       - public
   only:
-    - tags
+    - master
 
 deploy:
   stage: deploy
