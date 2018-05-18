@@ -8,3 +8,4 @@ build
 dist
 glue/git_version.py
 src/conf/s6_db2/*.sql
+/docs/_build

@@ -23,6 +23,7 @@ import sys
 
 from setuptools import (setup, find_packages, Extension)
 
+cmdclass = {}
 
 # get version
 def find_version(path):
@@ -43,8 +44,17 @@ setup_requires = ['setuptools']
 install_requires = ['six']
 
 # add test dependencies
-if set(('pytest', 'test', 'prt')).intersection(sys.argv):
+if {'pytest', 'test', 'prt'}.intersection(sys.argv):
     setup_requires.append('pytest_runner')
+
+# add documentation dependencies
+if {'build_sphinx'}.intersection(sys.argv):
+    setup_requires.extend([
+        'sphinx',
+        'sphinx_rtd_theme',
+    ])
+    from sphinx.setup_command import BuildDoc
+    cmdclass['build_sphinx'] = BuildDoc
 
 # define extension
 csegments = Extension(
@@ -59,8 +69,10 @@ setup(name='ligo-segments',
       description='Representations of semi-open intervals',
       author='Kipp Cannon',
       author_email='kipp.cannon@ligo.org',
+      license='GPLv3',
       packages=packages,
       namespace_packages=['ligo'],
+      cmdclass=cmdclass,
       setup_requires=setup_requires,
       install_requires=install_requires,
       ext_modules=[csegments],
