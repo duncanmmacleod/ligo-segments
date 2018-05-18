@@ -137,6 +137,20 @@ build:debian:stretch:
 
 # -- deploy -----------------
 
+pages:
+  stage: deploy
+  image: python
+  before_script:
+    - apt-get -yqq install python-sphinx
+  script:
+    - python setup.py build_sphinx
+    - mv build/sphinx/html public
+  artifacts:
+    paths:
+      - public
+  only:
+    - tags
+
 deploy:
   stage: deploy
   image: python
