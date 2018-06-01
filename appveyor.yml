@@ -8,4 +8,4 @@ install:
 build_script:
   - "%PYTHON%\\python.exe -m pip install ."
 test_script:
-  - "%PYTHON%\\python.exe -c \"from ligo import segments; print(segments(1, 2) + segments(2, 3))\""
+  - "%PYTHON%\\python.exe -c \"from ligo import segments; print(segments.segment(1, 2) + segments.segment(2, 3))\""
