@@ -25,6 +25,10 @@
 #ifndef _SIX_H
 #define _SIX_H
 
+#ifdef _MSC_VER
+#define inline __inline
+#endif
+
 #if PY_MAJOR_VERSION < 3
 #ifdef PyMODINIT_FUNC
 #undef PyMODINIT_FUNC

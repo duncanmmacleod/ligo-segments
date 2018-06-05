@@ -36,6 +36,28 @@
 #define MODULE_NAME "ligo.__segments"
 
 
+#ifdef _MSC_VER
+    #define inline __inline
+    #ifndef NAN
+        static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
+        #define NAN (*(const double *) __nan)
+    #endif
+    #ifndef INFINITY
+        static const unsigned long __infinity[2] = {0x00000000, 0x7ff00000};
+        #define INFINITY (*(const double *) __infinity)
+    #endif
+#else
+    #ifndef INFINITY
+        #define INFINITY (1.0/0.0)
+    #endif
+    #ifndef NAN
+        #define NAN (INFINITY-INFINITY)
+    #endif
+#endif
+
+
+
+
 /*
  * ============================================================================
  *
