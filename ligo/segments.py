@@ -137,18 +137,23 @@ class infinity(object):
 
 	# tests
 
-	def __cmp__(self, other):
-		"""
-		Positive infinity compares as greater than everything
-		except itself, negative infinity compares as less than
-		everything except itself.
-		"""
-		if self is other:
-			return 0
-		if self is PosInfinity:
-			return 1
-		# self is NegInfinity
-		return -1
+	def __lt__(self, other):
+		return self is NegInfinity and other is not NegInfinity
+
+	def __gt__(self, other):
+		return self is PosInfinity and other is not PosInfinity
+
+	def __le__(self, other):
+		return self is NegInfinity or other is PosInfinity
+
+	def __ge__(self, other):
+		return self is PosInfinity or other is NegInfinity
+
+	def __eq__(self, other):
+		return self is other
+
+	def __ne__(self, other):
+		return self is not other
 
 	def __nonzero__(self):
 		"""

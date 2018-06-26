@@ -67,6 +67,17 @@ def set2():
 
 
 class test_infinity(unittest.TestCase):
+	def test_math(self):
+		a = segments.infinity()
+		self.assertEqual(-a, -a)
+		self.assertLess(-a, 0)
+		self.assertLess(-a, a)
+		self.assertGreater(0, -a)
+		self.assertLess(0, a)
+		self.assertGreater(a, -a)
+		self.assertGreater(a, 0)
+		self.assertEqual(a, a)
+
 	@unittest.skipIf(sys.version_info.major >= 3,
 		'Python 3 does not have cmp')
 	def test__cmp__(self):
