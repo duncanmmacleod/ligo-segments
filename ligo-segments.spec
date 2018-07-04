@@ -1,7 +1,7 @@
 %global srcname  ligo-segments
 
 Name:           %{srcname}
-Version:        1.0.1
+Version:        1.0.0
 Release:        1%{?dist}
 Summary:        Representations of semi-open intervals
 
@@ -76,8 +76,5 @@ make check PYTHON=%{__python3} PYTHONPATH="$RPM_BUILD_ROOT%{python3_sitearch}"
 %{python3_sitearch}/*
 
 %changelog
-* Wed Jul 04 2018 Duncan Macleod <duncan.macleod@ligo.org>
-- 1.0.1: bug-fix release
-
 * Thu May 10 2018 Duncan Macleod <duncan.macleod@ligo.org>
 - 1.0.0: first release of ligo.segments, should be funtionally identical to glue.segments

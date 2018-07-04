@@ -52,7 +52,7 @@ from six.moves import range
 
 
 __author__ = "Kipp Cannon <kipp.cannon@ligo.org>"
-__version__ = '1.0.1'
+__version__ = '1.0.0'
 
 
 #
