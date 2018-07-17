@@ -21,6 +21,7 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          ${python:Depends},
+         python-ligo-common,
          python-six
 Description: Representations of semi-open intervals - Python package
  ligo-segments provides representation of semi-open intervals or "segments".
@@ -34,6 +35,7 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          ${python3:Depends},
+         python3-ligo-common,
          python3-six
 Description: Representations of semi-open intervals - Python 3 package
  ligo-segments provides representation of semi-open intervals or "segments".
