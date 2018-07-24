@@ -64,6 +64,12 @@ echo "import site; site.addsitedir('$RPM_BUILD_ROOT%{python3_sitearch}')" > $RPM
 # run the tests
 make check PYTHON=%{__python2} PYTHONPATH="$RPM_BUILD_ROOT%{python2_sitearch}"
 make check PYTHON=%{__python3} PYTHONPATH="$RPM_BUILD_ROOT%{python3_sitearch}"
+# clean up the sitecustomize hack
+rm -v \
+    $RPM_BUILD_ROOT%{python2_sitearch}/sitecustomize.py* \
+    $RPM_BUILD_ROOT%{python3_sitearch}/sitecustomize.py* \
+    $RPM_BUILD_ROOT%{python3_sitearch}/__pycache__/sitecustomize.*.pyc
+rm -vd $RPM_BUILD_ROOT%{python3_sitearch}/__pycache__/
 
 %files -n python2-%{srcname}
 %license LICENSE
