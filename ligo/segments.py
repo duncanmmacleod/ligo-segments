@@ -454,7 +454,7 @@ class segment(tuple):
 		"""
 		try:
 			a, b = other
-		except ValueError:
+		except (ValueError, TypeError):
 			return self[0] <= other < self[1]
 		else:
 			return (self[0] <= a) and (self[1] >= b)
