@@ -41,7 +41,7 @@ packages = find_packages()
 
 # declare dependencies
 setup_requires = ['setuptools']
-install_requires = ['six']
+install_requires = ['six', 'ligo-common']
 
 # add test dependencies
 if {'pytest', 'test', 'prt'}.intersection(sys.argv):
