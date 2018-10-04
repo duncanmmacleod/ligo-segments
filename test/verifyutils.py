@@ -1,6 +1,4 @@
 import random
-from six.moves import range
-from six.moves import zip
 
 # FIXME:  why is this required?
 import pkg_resources
@@ -50,7 +48,4 @@ def iscoalesced(l):
 	"""
 	Return True if the segmentlist l is coalesced.
 	"""
-	for a, b in zip(l, l[1:]):
-		if a[1] >= b[0]:
-			return False
-	return True
+	return all(a[1] < b[0] for a, b in zip(l, l[1:]))

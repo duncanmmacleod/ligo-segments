@@ -5,8 +5,6 @@ import random
 import sys
 import unittest
 import verifyutils
-from six.moves import map
-from six.moves import range
 
 # FIXME:  why is this required?
 import pkg_resources
