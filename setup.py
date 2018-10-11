@@ -28,6 +28,11 @@ def find_version(path):
 		raise RuntimeError("'%s': unable to find __version__ string" % path)
 	return version_match.group(1)
 
+version = find_version(os.path.join('ligo', 'segments.py'))
+
+# transform ligo-segments.spec.in to ligo-segments.spec
+open("ligo-segments.spec", "w").writelines([line.replace("@VERSION@", version) for line in open("ligo-segments.spec.in")])
+
 # declare dependencies
 setup_requires = ['setuptools']
 cmdclass = {}
@@ -47,7 +52,7 @@ if {'build_sphinx'}.intersection(sys.argv):
 # run setup
 setup(
 	name = 'ligo-segments',
-	version = find_version(os.path.join('ligo', 'segments.py')),
+	version = version,
 	description = 'Representations of semi-open intervals',
 	author = 'Kipp Cannon',
 	author_email = 'kipp.cannon@ligo.org',
