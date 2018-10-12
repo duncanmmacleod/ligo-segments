@@ -530,7 +530,7 @@ if __name__ == "__main__":
 
 	# then with C extension implementation
 
-	from ligo import __segments
+	from ligo.segments import __segments
 	segments.infinity = __segments.infinity
 	segments.NegInfinity = __segments.NegInfinity
 	segments.PosInfinity = __segments.PosInfinity

@@ -33,7 +33,7 @@
 #include <Python.h>
 
 
-#define MODULE_NAME "ligo.__segments"
+#define MODULE_NAME "ligo.segments.__segments"
 
 
 /*

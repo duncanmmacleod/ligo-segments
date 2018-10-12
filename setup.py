@@ -28,7 +28,7 @@ def find_version(path):
 		raise RuntimeError("'%s': unable to find __version__ string" % path)
 	return version_match.group(1)
 
-version = find_version(os.path.join('ligo', 'segments.py'))
+version = find_version(os.path.join('ligo', 'segments', '__init__.py'))
 
 # transform ligo-segments.spec.in to ligo-segments.spec
 open("ligo-segments.spec", "w").writelines([line.replace("@VERSION@", version) for line in open("ligo-segments.spec.in")])
@@ -57,14 +57,14 @@ setup(
 	author = 'Kipp Cannon',
 	author_email = 'kipp.cannon@ligo.org',
 	license = 'GPLv3',
-	packages = ['ligo'],
+	packages = ['ligo', 'ligo.segments'],
 	namespace_packages = ['ligo'],
 	cmdclass = cmdclass,
 	setup_requires = setup_requires,
 	install_requires = ['six', 'ligo-common'],
 	ext_modules = [
 		Extension(
-			'ligo.__segments',
+			'ligo.segments.__segments',
 			['src/segments.c', 'src/infinity.c', 'src/segment.c', 'src/segmentlist.c'],
 			include_dirs = ['src'],
 		),
