@@ -38,7 +38,7 @@ infinity object used to define semi-infinite and infinite segments.
 
 See also:
 
-glue.segmentsUtils
+ligo.segments.utils
 """
 
 
