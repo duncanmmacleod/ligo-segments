@@ -530,14 +530,14 @@ PyTypeObject segments_Segment_Type = {
 ">>> segment(\"AAA Towing\", \"York University\") & segment(\"Pool\", \"Zoo\")\n" \
 "segment('Pool', 'York University')\n" \
 ">>> x = [0, 1]	# a list\n" \
-">>> segment(x)\n" \
+">>> y = segment(x)\n" \
+">>> y\n" \
 "segment(0, 1)\n" \
-">>> y = segment(0, 1)\n" \
 ">>> y == x\n" \
-"True\n" \
+"False\n" \
 ">>> y is x\n" \
 "False\n" \
-">>> z = {x: [\"/path/to/file1\", \"/path/to/file2\"]}\n" \
+">>> z = {y: [\"/path/to/file1\", \"/path/to/file2\"]}\n" \
 ">>> y in z\n" \
 "True\n" \
 ">>> z[y]\n" \

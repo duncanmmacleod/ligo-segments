@@ -277,16 +277,16 @@ class segment(tuple):
 	>>> segment("AAA Towing", "York University") & segment("Pool", "Zoo")
 	segment('Pool', 'York University')
 	>>> x = [0, 1]	# a list
-	>>> segment(x)
+	>>> y = segment(x)
+	>>> y
 	segment(0, 1)
-	>>> y = segment(0, 1)
 	>>> y == x
-	True
+	False
 	>>> y is x
 	False
 	>>> x in y
 	True
-	>>> z = {x: ["/path/to/file1", "/path/to/file2"]}
+	>>> z = {y: ["/path/to/file1", "/path/to/file2"]}
 	>>> y in z
 	True
 	>>> z[y]
