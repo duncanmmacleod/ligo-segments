@@ -676,7 +676,10 @@ class segmentlist(list):
 		and another.  For lists of length m and n respectively,
 		this operation is O(n + m).
 		"""
-		if not other:
+		# we test len() and not simply bool() to not allow
+		# arithmetic to succeed on objects simply because they are
+		# logically false
+		if not len(other):
 			return self
 		if other is self:
 			del self[:]
@@ -748,8 +751,11 @@ class segmentlist(list):
 		calculation of the intersection, i.e. by testing bool(self
 		& other).  Requires both lists to be coalesced.
 		"""
-		# if either has zero length, the answer is False
-		if not (self and other):
+		# if either has zero length, the answer is False.  we know
+		# our bool() tests our length, but we use len() on other
+		# explicitly to avoid allowing arithmetic to succeed on
+		# objects simply because their boolean falue is false
+		if not (self and len(other)):
 			return False
 		# walk through both lists in order, searching for a match
 		i = j = 0
