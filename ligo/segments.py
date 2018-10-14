@@ -107,7 +107,7 @@ class infinity(object):
 	>>> math.isinf(x)
 	True
 	"""
-	__slots__ = []
+	__slots__ = ()
 
 	def __new__(cls, *args):
 		if args:
@@ -124,9 +124,7 @@ class infinity(object):
 		"""
 		Returns a string.
 		"""
-		if self is PosInfinity:
-			return "infinity"
-		return "-infinity"
+		return "infinity" if self is PosInfinity else "-infinity"
 
 	__str__ = __repr__
 
@@ -136,10 +134,7 @@ class infinity(object):
 		"""
 		Pickle support.
 		"""
-		if self is PosInfinity:
-			return (infinity, (1,))
-		# self is NegInfinity
-		return (infinity, (-1,))
+		return infinity, ((1,) if self is PosInfinity else (-1,))
 
 	# tests
 
@@ -173,10 +168,7 @@ class infinity(object):
 		"""
 		Returns -self.
 		"""
-		if self is PosInfinity:
-			return NegInfinity
-		# self is NegInfinity
-		return PosInfinity
+		return NegInfinity if self is PosInfinity else PosInfinity
 
 	def __pos__(self):
 		"""
@@ -206,19 +198,13 @@ class infinity(object):
 		"""
 		Returns -self.
 		"""
-		if self is PosInfinity:
-			return NegInfinity
-		# self is NegInfinity
-		return PosInfinity
+		return NegInfinity if self is PosInfinity else PosInfinity
 
 	def __float__(self):
 		"""
 		Returns +/-inf (allows math.isinf() to work).
 		"""
-		if self is PosInfinity:
-			return float("+inf")
-		# self is NegInfinity
-		return float("-inf")
+		return float("+inf") if self is PosInfinity else float("-inf")
 
 
 PosInfinity = object.__new__(infinity)
@@ -462,8 +448,7 @@ class segment(tuple):
 			a, b = other
 		except (ValueError, TypeError):
 			return self[0] <= other < self[1]
-		else:
-			return (self[0] <= a) and (self[1] >= b)
+		return (self[0] <= a) and (self[1] >= b)
 
 	# protraction and contraction and shifting
 
@@ -580,13 +565,13 @@ class segmentlist(list):
 		"""
 		if not len(self):
 			raise ValueError("empty list")
-		min, max = self[0]
+		mn, mx = self[0]
 		for lo, hi in self:
-			if min > lo:
-				min = lo
-			if max < hi:
-				max = hi
-		return segment(min, max)
+			if mn > lo:
+				mn = lo
+			if mx < hi:
+				mx = hi
+		return segment(mn, mx)
 
 	def find(self, item):
 		"""
