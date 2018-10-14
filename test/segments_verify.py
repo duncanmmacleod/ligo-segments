@@ -8,6 +8,9 @@ import verifyutils
 from six.moves import map
 from six.moves import range
 
+# FIXME:  why is this required?
+import pkg_resources
+
 
 #
 #  How many times to repeat the algebraic tests

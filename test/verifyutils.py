@@ -2,6 +2,9 @@ import random
 from six.moves import range
 from six.moves import zip
 
+# FIXME:  why is this required?
+import pkg_resources
+
 
 #
 # segmentlist generation utilities
