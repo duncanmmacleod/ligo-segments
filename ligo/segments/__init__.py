@@ -48,7 +48,7 @@ from copy import copy as shallowcopy
 
 
 __author__ = "Kipp Cannon <kipp.cannon@ligo.org>"
-__version__ = '1.0.0'
+__version__ = '1.1.0'
 
 
 __all__ = [
