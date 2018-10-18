@@ -1,3 +1,9 @@
+ligo-segments (1.1.1-1) stable; urgency=low
+
+  * remove test suite from packaging scripts
+
+ -- Kipp Cannon <kipp.cannon@ligo.org>  Thu, 18 Oct 2018 12:06:55 +0900
+
 ligo-segments (1.1.0-1) stable; urgency=low
 
   * better python3 support
