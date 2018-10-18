@@ -58,21 +58,6 @@ infinity object used to define semi-infinite and infinite segments.
 %py2_install
 %py3_install
 
-%check
-cd test
-# hack the python site to read from the build path:
-echo "import site; site.addsitedir('$RPM_BUILD_ROOT%{python2_sitearch}')" > $RPM_BUILD_ROOT%{python2_sitearch}/sitecustomize.py
-echo "import site; site.addsitedir('$RPM_BUILD_ROOT%{python3_sitearch}')" > $RPM_BUILD_ROOT%{python3_sitearch}/sitecustomize.py
-# run the tests
-make check PYTHON=%{__python2} PYTHONPATH="$RPM_BUILD_ROOT%{python2_sitearch}"
-make check PYTHON=%{__python3} PYTHONPATH="$RPM_BUILD_ROOT%{python3_sitearch}"
-# clean up the sitecustomize hack
-rm -v \
-    $RPM_BUILD_ROOT%{python2_sitearch}/sitecustomize.py* \
-    $RPM_BUILD_ROOT%{python3_sitearch}/sitecustomize.py* \
-    $RPM_BUILD_ROOT%{python3_sitearch}/__pycache__/sitecustomize.*.pyc
-rm -vd $RPM_BUILD_ROOT%{python3_sitearch}/__pycache__/
-
 %files -n python2-%{srcname}
 %license LICENSE
 %doc README.rst
