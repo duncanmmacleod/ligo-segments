@@ -27,7 +27,8 @@ infinity object used to define semi-infinite and infinite segments.
 Summary:  %{summary}
 Requires: python-six
 Requires: ligo-common
-Recommends: python2-lal
+# not supported by old rpmbuild
+#Recommends: python2-lal
 
 %{?python_provide:%python_provide python2-%{srcname}}
 
@@ -39,7 +40,8 @@ infinity object used to define semi-infinite and infinite segments.
 Summary:  %{summary}
 Requires: python%{python3_pkgversion}-six
 Requires: python%{python3_pkgversion}-ligo-common
-Recommends: python3-lal
+# not supported by old rpmbuild
+#Recommends: python3-lal
 
 %{?python_provide:%python_provide python%{python3_pkgversion}-%{srcname}}
 
