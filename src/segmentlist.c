@@ -394,6 +394,101 @@ static PyObject *find(PyObject *self, PyObject *item)
 }
 
 
+static PyObject *value_slice_to_index(PyObject *self, PyObject *s)
+{
+	PyObject *start = NULL;
+	PyObject *stop = NULL;
+	PyObject *step = NULL;
+	PyObject *x;
+
+	/*
+	 * require step to be None
+	 */
+
+	step = PyObject_GetAttrString(s, "step");
+	if(!step)
+		goto error;
+	if(step != Py_None) {
+		PyErr_SetString(PyExc_ValueError, "slice() with step not supported");
+		goto error;
+	}
+	/* hang onto the reference */
+
+	/*
+	 * convert start
+	 */
+
+	x = PyObject_GetAttrString(s, "start");
+	if(!x)
+		goto error;
+	if(x == Py_None)
+		/* reuse reference */
+		start = x;
+	else {
+		Py_ssize_t i = bisect_left(self, x, -1, -1);
+		if(i < 0) {
+			Py_DECREF(x);
+			/* internal error */
+			goto error;
+		}
+		if(--i < 0)
+			i = 0;
+		if(PyList_GET_SIZE(self)) {
+			PyObject *y = NULL;
+			int result;
+			if(unpack(PyList_GET_ITEM(self, i), NULL, &y)) {
+				Py_DECREF(x);
+				goto error;
+			}
+			result = PyObject_RichCompareBool(y, x, Py_LE);
+			Py_DECREF(x);
+			Py_DECREF(y);
+			if(result < 0)
+				goto error;
+			if(result > 0)
+				i++;
+		}
+		start = PyLong_FromSsize_t(i);
+		if(!start)
+			goto error;
+	}
+
+	/*
+	 * convert stop
+	 */
+
+	x = PyObject_GetAttrString(s, "stop");
+	if(!x)
+		goto error;
+	if(x == Py_None)
+		/* reuse reference */
+		stop = x;
+	else {
+		Py_ssize_t i = bisect_left(self, x, -1, -1);
+		Py_DECREF(x);
+		if(i < 0) {
+			/* internal error */
+			goto error;
+		}
+		stop = PyLong_FromSsize_t(i);
+		if(!stop)
+			goto error;
+	}
+
+	/*
+	 * done.  consumes references
+	 */
+
+	return PySlice_New(start, stop, step);
+
+error:
+	Py_XDECREF(start);
+	Py_XDECREF(stop);
+	Py_XDECREF(step);
+	return NULL;
+}
+
+
 /*
  * Comparisons
  */
@@ -1390,6 +1485,42 @@ static PySequenceMethods as_sequence = {
 static struct PyMethodDef methods[] = {
 	{"extent", extent, METH_NOARGS, "Return the segment whose end-points denote the maximum and minimum extent of the segmentlist.  Does not require the segmentlist to be coalesced."},
 	{"find", find, METH_O, "Return the smallest i such that i is the index of an element that wholly contains item.  Raises ValueError if no such element exists.  Does not require the segmentlist to be coalesced."},
+	{"value_slice_to_index", value_slice_to_index, METH_O, "Convert the slice s from a slice of values to a slice of indexes.  self must be coalesced, the operation is O(log n).  This is used to extract from a segmentlist the segments that span a given range of values, and is useful in reducing operation counts when many repeated operations are required within a limited range of values.\n\nExamples:\n\n" \
+">>> x = segmentlist([segment(-10, -5), segment(5, 10), segment(20, 30)])\n" \
+">>> x\n" \
+"[segment(-10, -5), segment(5, 10), segment(20, 30)]\n" \
+">>> x[x.value_slice_to_index(slice(7, 8))]\n" \
+"[segment(5, 10)]\n" \
+">>> x[x.value_slice_to_index(slice(7, 10))]\n" \
+"[segment(5, 10)]\n" \
+">>> x[x.value_slice_to_index(slice(7, 18))]\n" \
+"[segment(5, 10)]\n" \
+">>> x[x.value_slice_to_index(slice(7, 20))]\n" \
+"[segment(5, 10)]\n" \
+">>> x[x.value_slice_to_index(slice(7, 25))]\n" \
+"[segment(5, 10), segment(20, 30)]\n" \
+">>> x[x.value_slice_to_index(slice(10, 10))]\n" \
+"[]\n" \
+">>> x[x.value_slice_to_index(slice(10, 18))]\n" \
+"[]\n" \
+">>> x[x.value_slice_to_index(slice(10, 20))]\n" \
+"[]\n" \
+">>> x[x.value_slice_to_index(slice(10, 25))]\n" \
+"[segment(20, 30)]\n" \
+">>> x[x.value_slice_to_index(slice(20, 20))]\n" \
+"[segment(20, 30)]\n" \
+">>> x[x.value_slice_to_index(slice(-20, 8))]\n" \
+"[segment(-10, -5), segment(5, 10)]\n" \
+">>> x[x.value_slice_to_index(slice(-20, -15))]\n" \
+"[]\n" \
+">>> x[x.value_slice_to_index(slice(11, 18))]\n" \
+"[]\n" \
+">>> x[x.value_slice_to_index(slice(40, 50))]\n" \
+"[]\n" \
+">>> x[x.value_slice_to_index(slice(None, 0))]\n" \
+"[segment(-10, -5)]\n" \
+">>> x[x.value_slice_to_index(slice(0, None))]\n" \
+"[segment(5, 10), segment(20, 30)]"},
 	{"intersects", intersects, METH_O, "Returns True if the intersection of self and the segmentlist other is not the null set, otherwise returns False.  The algorithm is O(n), but faster than explicit calculation of the intersection, i.e. by testing bool(self & other).  Requires both lists to be coalesced."},
 	{"intersects_segment", intersects_segment, METH_O, "Returns True if the intersection of self and the segment other is not the null set, otherwise returns False.  The algorithm is O(log n).  Requires the list to be coalesced."},
 	{"coalesce", coalesce, METH_NOARGS, "Sort the elements of a list into ascending order, and merge continuous segments into single segments.  This operation is O(n log n)."},

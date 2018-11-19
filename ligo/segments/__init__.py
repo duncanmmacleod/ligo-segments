@@ -585,6 +585,62 @@ class segmentlist(list):
 				return i
 		raise ValueError(item)
 
+	def value_slice_to_index(self, s):
+		"""
+		Convert the slice s from a slice of values to a slice of
+		indexes.  self must be coalesced, the operation is O(log
+		n).  This is used to extract from a segmentlist the
+		segments that span a given range of values, and is useful
+		in reducing operation counts when many repeated operations
+		are required within a limited range of values.
+
+		Examples:
+
+		>>> x = segmentlist([segment(-10, -5), segment(5, 10), segment(20, 30)])
+		>>> x
+		[segment(-10, -5), segment(5, 10), segment(20, 30)]
+		>>> x[x.value_slice_to_index(slice(7, 8))]
+		[segment(5, 10)]
+		>>> x[x.value_slice_to_index(slice(7, 18))]
+		[segment(5, 10)]
+		>>> x[x.value_slice_to_index(slice(7, 20))]
+		[segment(5, 10)]
+		>>> x[x.value_slice_to_index(slice(7, 25))]
+		[segment(5, 10), segment(20, 30)]
+		>>> x[x.value_slice_to_index(slice(10, 10))]
+		[]
+		>>> x[x.value_slice_to_index(slice(10, 18))]
+		[]
+		>>> x[x.value_slice_to_index(slice(10, 20))]
+		[]
+		>>> x[x.value_slice_to_index(slice(10, 25))]
+		[segment(20, 30)]
+		>>> x[x.value_slice_to_index(slice(20, 20))]
+		[segment(20, 30)]
+		>>> x[x.value_slice_to_index(slice(-20, 8))]
+		[segment(-10, -5), segment(5, 10)]
+		>>> x[x.value_slice_to_index(slice(-20, -15))]
+		[]
+		>>> x[x.value_slice_to_index(slice(11, 18))]
+		[]
+		>>> x[x.value_slice_to_index(slice(40, 50))]
+		[]
+		>>> x[x.value_slice_to_index(slice(None, 0))]
+		[segment(-10, -5)]
+		>>> x[x.value_slice_to_index(slice(0, None))]
+		[segment(5, 10), segment(20, 30)]
+		"""
+		if s.step is not None:
+			raise ValueError("slice() with step not supported")
+		if s.start is None:
+			start = None
+		else:
+			start = max(bisect_left(self, s.start) - 1, 0)
+			if self and self[start][1] <= s.start:
+				start += 1
+		stop = None if s.stop is None else bisect_left(self, s.stop)
+		return slice(start, stop)
+
 	# arithmetic operations that are sensible with segment lists
 
 	def __iand__(self, other):
