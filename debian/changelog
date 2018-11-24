@@ -1,3 +1,10 @@
+ligo-segments (1.2.0-1) stable; urgency=low
+
+  * add segmentlist.value_slice_to_index()
+  * remove "Recommends:" from .spec (LDG RPM versions too old)
+
+ -- Kipp Cannon <kipp.cannon@ligo.org>  Thu, 18 Oct 2018 12:06:55 +0900
+
 ligo-segments (1.1.1-1) stable; urgency=low
 
   * remove test suite from packaging scripts
