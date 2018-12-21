@@ -61,7 +61,7 @@ setup(
 	namespace_packages = ['ligo'],
 	cmdclass = cmdclass,
 	setup_requires = setup_requires,
-	install_requires = ['six', 'ligo-common'],
+	install_requires = ['six'],
 	ext_modules = [
 		Extension(
 			'ligo.segments.__segments',
