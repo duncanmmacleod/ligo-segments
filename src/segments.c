@@ -28,7 +28,6 @@
 
 #include <Python.h>
 #include <segments.h>
-#include "six.h"
 
 
 /*
@@ -43,37 +42,51 @@
 #define MODULE_DOC "C implementations of the infinity, segment, and segmentlist classes from the segments module."
 
 
-static PyModuleDef moduledef = {
-	PyModuleDef_HEAD_INIT,
-	MODULE_NAME, MODULE_DOC, -1, NULL
-};
-
-
+#if PY_MAJOR_VERSION < 3
+PyMODINIT_FUNC init__segments(void); /* Silence -Wmissing-prototypes */
+PyMODINIT_FUNC init__segments(void)
+#else
 PyMODINIT_FUNC PyInit___segments(void); /* Silence -Wmissing-prototypes */
 PyMODINIT_FUNC PyInit___segments(void)
+#endif
 {
-	PyObject *module = NULL;
+#if PY_MAJOR_VERSION < 3
+	PyObject *module = Py_InitModule3(MODULE_NAME, NULL, MODULE_DOC);
+#else
+	static struct PyModuleDef modef = {
+		PyModuleDef_HEAD_INIT,
+		.m_name = MODULE_NAME,
+		.m_doc = MODULE_DOC,
+		.m_size = -1,
+		.m_methods = NULL,
+	};
+	PyObject *module = PyModule_Create(&modef);
+#endif
 
-	if(PyType_Ready(&segments_Infinity_Type) < 0)
+	if(!module)
 		goto done;
+
+	if(PyType_Ready(&segments_Infinity_Type) < 0) {
+		Py_DECREF(module);
+		module = NULL;
+		goto done;
+	}
 
 	segments_Segment_Type.tp_base = &PyTuple_Type;
 	if(!segments_Segment_Type.tp_hash)
 		segments_Segment_Type.tp_hash = PyTuple_Type.tp_hash;
-	if(PyType_Ready(&segments_Segment_Type) < 0)
+	if(PyType_Ready(&segments_Segment_Type) < 0) {
+		Py_DECREF(module);
+		module = NULL;
 		goto done;
+	}
 
 	segments_SegmentList_Type.tp_base = &PyList_Type;
-	if(PyType_Ready(&segments_SegmentList_Type) < 0)
+	if(PyType_Ready(&segments_SegmentList_Type) < 0) {
+		Py_DECREF(module);
+		module = NULL;
 		goto done;
-
-	/*
-	 * Initialize module
-	 */
-
-	module = PyModule_Create(&moduledef);
-	if (!module)
-		goto done;
+	}
 
 	/*
 	 * Create infinity class
@@ -113,8 +126,9 @@ PyMODINIT_FUNC PyInit___segments(void)
 	PyModule_AddObject(module, "segmentlist", (PyObject *) &segments_SegmentList_Type);
 
 done:
+#if PY_MAJOR_VERSION < 3
+	return;
+#else
 	return module;
+#endif
 }
-
-
-SIX_COMPAT_MODULE(__segments)
